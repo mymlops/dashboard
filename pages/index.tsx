@@ -7,11 +7,9 @@ interface IApp {
   port: string;
 }
 
+const editor: IApp = { name: "VSCode", port: "8888" };
+
 const apps: IApp[] = [
-  {
-    name: "VSCode",
-    port: "8888",
-  },
   { name: "Jupyter", port: "8889" },
   { name: "Apache Airflow", port: "8080" },
   { name: "MLflow", port: "5000" },
@@ -20,27 +18,38 @@ const apps: IApp[] = [
 ];
 
 const Home: NextPage = () => {
-  const ports = apps.map((app) => app.port);
-
   const [protocol, setProtocol] = useState("http");
   const [hostname, setHostname] = useState("0.0.0.0");
-  const [currentPort, setCurrentPort] = useState("8888");
 
   useEffect(() => {
     setProtocol(window.location.protocol);
     setHostname(window.location.hostname);
   }, []);
 
+  useEffect(() => {
+    window.addEventListener("beforeunload", alertUser);
+    return () => {
+      window.removeEventListener("beforeunload", alertUser);
+    };
+  }, []);
+
+  const alertUser = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+  };
+
   return (
     <>
       <AppBar elevation={0} sx={{ backgroundColor: "#1b1e2e" }}>
-        <Toolbar>
+        <Toolbar variant="dense">
           <Stack direction="row" justifyContent="flex-end" flexGrow={1} gap={2}>
             {apps.map((app, index) => (
               <Button
                 key={index}
                 variant="outlined"
-                onClick={() => setCurrentPort(app.port)}
+                size="small"
+                component="a"
+                href={`${protocol}//${hostname}:${app.port}`}
+                target="_blank"
                 sx={{
                   borderColor: "#e83a74",
                   color: "#e83a74",
@@ -56,19 +65,16 @@ const Home: NextPage = () => {
           </Stack>
         </Toolbar>
       </AppBar>
-      {ports.map((port, index) => (
-        <object
-          key={index}
-          data={`${protocol}//${hostname}:${port}`}
-          width="100%"
-          style={{
-            position: "fixed",
-            height: "calc(100vh - 64px)",
-            top: 64,
-            display: currentPort === port ? undefined : "none",
-          }}
-        />
-      ))}
+      <iframe
+        src={`${protocol}//${hostname}:${editor.port}`}
+        width="100%"
+        style={{
+          position: "fixed",
+          height: "calc(100vh - 48px)",
+          top: 48,
+          border: "none",
+        }}
+      />
     </>
   );
 };
