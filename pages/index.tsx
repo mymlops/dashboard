@@ -32,7 +32,7 @@ const Home: NextPage = () => {
   }, []);
 
   return (
-    <Stack>
+    <>
       <AppBar elevation={0} sx={{ backgroundColor: "#1b1e2e" }}>
         <Toolbar>
           <Stack direction="row" justifyContent="flex-end" flexGrow={1} gap={2}>
@@ -57,20 +57,19 @@ const Home: NextPage = () => {
         </Toolbar>
       </AppBar>
       {ports.map((port, index) => (
-        <iframe
+        <object
           key={index}
-          src={`${protocol}//${hostname}:${port}`}
+          data={`${protocol}//${hostname}:${port}`}
           width="100%"
           style={{
             position: "fixed",
             height: "calc(100vh - 64px)",
             top: 64,
-            border: "none",
-            display: currentPort === port ? "block" : "none",
+            display: currentPort === port ? undefined : "none",
           }}
         />
       ))}
-    </Stack>
+    </>
   );
 };
 
