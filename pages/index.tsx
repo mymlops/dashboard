@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import type { NextPage } from "next";
-import Image from "next/image";
 import { AppBar, Toolbar, Stack, Button } from "@mui/material";
-import styles from "../styles/Home.module.css";
 
 interface IApp {
   name: string;
@@ -24,7 +22,14 @@ const apps: IApp[] = [
 const Home: NextPage = () => {
   const ports = apps.map((app) => app.port);
 
+  const [protocol, setProtocol] = useState("http");
+  const [hostname, setHostname] = useState("0.0.0.0");
   const [currentPort, setCurrentPort] = useState("8888");
+
+  useEffect(() => {
+    setProtocol(window.location.protocol);
+    setHostname(window.location.hostname);
+  }, []);
 
   return (
     <Stack>
@@ -54,7 +59,7 @@ const Home: NextPage = () => {
       {ports.map((port, index) => (
         <iframe
           key={index}
-          src={`http://localhost:${port}`}
+          src={`${protocol}//${hostname}:${port}`}
           width="100%"
           style={{
             position: "fixed",
