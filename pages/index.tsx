@@ -1,6 +1,23 @@
 import React, { useState, useEffect } from "react";
 import type { NextPage } from "next";
-import { AppBar, Toolbar, Stack, Button } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Stack,
+  Button,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
+import axios from "axios";
+import axiosRetry from "axios-retry";
+
+axiosRetry(axios, {
+  retries: 20,
+  retryDelay: (retryCount) => {
+    return retryCount * 500;
+  },
+  retryCondition: () => true,
+});
 
 interface IApp {
   name: string;
@@ -18,8 +35,9 @@ const apps: IApp[] = [
 ];
 
 const Home: NextPage = () => {
-  const [protocol, setProtocol] = useState("http");
-  const [hostname, setHostname] = useState("0.0.0.0");
+  const [editorAvailable, setEditorAvailable] = useState(false);
+  const [protocol, setProtocol] = useState<string | undefined>();
+  const [hostname, setHostname] = useState<string | undefined>();
 
   useEffect(() => {
     setProtocol(window.location.protocol);
@@ -27,55 +45,73 @@ const Home: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", alertUser);
-    return () => {
-      window.removeEventListener("beforeunload", alertUser);
-    };
-  }, []);
-
-  const alertUser = (e: BeforeUnloadEvent) => {
-    e.preventDefault();
-  };
+    if (protocol && hostname) {
+      axios.get(`${protocol}//${hostname}:${editor.port}`).then((_) => {
+        setEditorAvailable(true);
+      });
+    }
+  }, [protocol, hostname]);
 
   return (
     <>
-      <AppBar elevation={0} sx={{ backgroundColor: "#1b1e2e" }}>
-        <Toolbar variant="dense">
-          <Stack direction="row" justifyContent="flex-end" flexGrow={1} gap={2}>
-            {apps.map((app, index) => (
-              <Button
-                key={index}
-                variant="outlined"
-                size="small"
-                component="a"
-                href={`${protocol}//${hostname}:${app.port}`}
-                target="_blank"
-                sx={{
-                  borderColor: "#e83a74",
-                  color: "#e83a74",
-                  ":hover": {
-                    borderColor: "#e83a74",
-                  },
-                  fontWeight: 700,
-                }}
+      {!editorAvailable && <Loading />}
+      {editorAvailable && (
+        <>
+          <AppBar elevation={0} sx={{ backgroundColor: "#1b1e2e" }}>
+            <Toolbar variant="dense">
+              <Stack
+                direction="row"
+                justifyContent="flex-end"
+                flexGrow={1}
+                gap={2}
               >
-                {app.name}
-              </Button>
-            ))}
-          </Stack>
-        </Toolbar>
-      </AppBar>
-      <iframe
-        src={`${protocol}//${hostname}:${editor.port}`}
-        width="100%"
-        style={{
-          position: "fixed",
-          height: "calc(100vh - 48px)",
-          top: 48,
-          border: "none",
-        }}
-      />
+                {apps.map((app, index) => (
+                  <Button
+                    key={index}
+                    variant="outlined"
+                    size="small"
+                    component="a"
+                    href={`${protocol}//${hostname}:${app.port}`}
+                    target="_blank"
+                    sx={{
+                      borderColor: "#e83a74",
+                      color: "#e83a74",
+                      ":hover": {
+                        borderColor: "#e83a74",
+                      },
+                      fontWeight: 700,
+                    }}
+                  >
+                    {app.name}
+                  </Button>
+                ))}
+              </Stack>
+            </Toolbar>
+          </AppBar>
+          <iframe
+            src={`${protocol}//${hostname}:${editor.port}`}
+            width="100%"
+            style={{
+              position: "fixed",
+              height: "calc(100vh - 48px)",
+              top: 48,
+              border: "none",
+            }}
+          />
+        </>
+      )}
     </>
+  );
+};
+
+const Loading = () => {
+  return (
+    <Stack alignItems="center" justifyContent="center" gap={4} height="100vh">
+      <Typography variant="h2" justifyContent="center">
+        Creating stack
+      </Typography>
+      <CircularProgress size={60} thickness={5} />
+    </Stack>
   );
 };
 
