@@ -38,10 +38,12 @@ const Home: NextPage = () => {
   const [editorAvailable, setEditorAvailable] = useState(true);
   const [protocol, setProtocol] = useState<string | undefined>();
   const [hostname, setHostname] = useState<string | undefined>();
+  const [search, setSearch] = useState<string | undefined>();
 
   useEffect(() => {
     setProtocol(window.location.protocol);
     setHostname(window.location.hostname);
+    setSearch(window.location.search);
   }, []);
 
   // useEffect(() => {
@@ -89,7 +91,7 @@ const Home: NextPage = () => {
             </Toolbar>
           </AppBar>
           <iframe
-            src={`${protocol}//${hostname}:${editor.port}`}
+            src={`${protocol}//${hostname}:${editor.port}/${search}`}
             width="100%"
             style={{
               position: "fixed",
