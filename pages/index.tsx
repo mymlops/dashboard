@@ -35,7 +35,7 @@ const apps: IApp[] = [
 ];
 
 const Home: NextPage = () => {
-  const [editorAvailable, setEditorAvailable] = useState(false);
+  const [editorAvailable, setEditorAvailable] = useState(true);
   const [protocol, setProtocol] = useState<string | undefined>();
   const [hostname, setHostname] = useState<string | undefined>();
 
@@ -44,13 +44,13 @@ const Home: NextPage = () => {
     setHostname(window.location.hostname);
   }, []);
 
-  useEffect(() => {
-    if (protocol && hostname) {
-      axios.get(`${protocol}//${hostname}:${editor.port}`).then((_) => {
-        setEditorAvailable(true);
-      });
-    }
-  }, [protocol, hostname]);
+  // useEffect(() => {
+  //   if (protocol && hostname) {
+  //     axios.get(`${protocol}//${hostname}:${editor.port}`).then((_) => {
+  //       setEditorAvailable(true);
+  //     });
+  //   }
+  // }, [protocol, hostname]);
 
   return (
     <>
