@@ -11,6 +11,8 @@ import {
 import axios from "axios";
 import axiosRetry from "axios-retry";
 
+const DEFAULT_SEARCH = "?folder=/home/ubuntu/workspace/example-1";
+
 axiosRetry(axios, {
   retries: 20,
   retryDelay: (retryCount) => {
@@ -38,12 +40,10 @@ const Home: NextPage = () => {
   const [editorAvailable, setEditorAvailable] = useState(true);
   const [protocol, setProtocol] = useState<string | undefined>();
   const [hostname, setHostname] = useState<string | undefined>();
-  const [search, setSearch] = useState<string | undefined>();
 
   useEffect(() => {
     setProtocol(window.location.protocol);
     setHostname(window.location.hostname);
-    setSearch(window.location.search);
   }, []);
 
   // useEffect(() => {
@@ -91,7 +91,7 @@ const Home: NextPage = () => {
             </Toolbar>
           </AppBar>
           <iframe
-            src={`${protocol}//${hostname}:${editor.port}/${search}`}
+            src={`${protocol}//${hostname}:${editor.port}/${DEFAULT_SEARCH}`}
             width="100%"
             style={{
               position: "fixed",
