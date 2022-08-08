@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from "react";
 import type { NextPage } from "next";
-import { AppBar, Toolbar, Stack, Button } from "@mui/material";
+import { AppBar, Toolbar, Stack, Typography } from "@mui/material";
+import ToolChip from "../components/ToolChip";
+import { ITool } from "../api/tool";
+import {
+  JupyterLogo,
+  ApacheAirflowLogo,
+  MLflowLogo,
+  GrafanaLogo,
+  PrometheusLogo,
+} from "../public";
+import { BsStack } from "react-icons/bs";
+import theme, { blueBlack } from "../styles/theme";
 
 const DEFAULT_SEARCH = "?folder=/home/ubuntu/workspace/example-1";
 
-interface IApp {
-  name: string;
-  port: string;
-}
+const editor: ITool = { name: "VSCode", port: "8888" };
 
-const editor: IApp = { name: "VSCode", port: "8888" };
-
-const apps: IApp[] = [
-  { name: "Jupyter", port: "8889" },
-  { name: "Apache Airflow", port: "8080" },
-  { name: "MLflow", port: "5000" },
-  { name: "Grafana", port: "3000" },
-  { name: "Prometheus", port: "9090" },
+const apps: ITool[] = [
+  { name: "Jupyter", logo: JupyterLogo, port: "8889" },
+  { name: "Apache Airflow", logo: ApacheAirflowLogo, port: "8080" },
+  { name: "MLflow", logo: MLflowLogo, port: "5000" },
+  { name: "Grafana", logo: GrafanaLogo, port: "3000" },
+  { name: "Prometheus", logo: PrometheusLogo, port: "9090" },
 ];
 
 const Home: NextPage = () => {
@@ -28,30 +34,28 @@ const Home: NextPage = () => {
     setHostname(window.location.hostname);
   }, []);
 
+  const handleToolClick = (tool: ITool) => {
+    window.open(`${protocol}//${hostname}:${tool.port}`);
+  };
+
   return (
     <>
-      <AppBar elevation={0} sx={{ backgroundColor: "#1b1e2e" }}>
+      <AppBar elevation={0} sx={{ backgroundColor: blueBlack }}>
         <Toolbar variant="dense">
+          <Stack direction="row" alignItems="center" gap={2}>
+            <BsStack color={theme.palette.primary.light} size={25} />
+            <Typography color="white" variant="h5">
+              MyMLOps
+            </Typography>
+          </Stack>
           <Stack direction="row" justifyContent="flex-end" flexGrow={1} gap={2}>
             {apps.map((app, index) => (
-              <Button
+              <ToolChip
                 key={index}
-                variant="outlined"
+                tool={app}
                 size="small"
-                component="a"
-                href={`${protocol}//${hostname}:${app.port}`}
-                target="_blank"
-                sx={{
-                  borderColor: "#e83a74",
-                  color: "#e83a74",
-                  ":hover": {
-                    borderColor: "#e83a74",
-                  },
-                  fontWeight: 700,
-                }}
-              >
-                {app.name}
-              </Button>
+                onClick={() => handleToolClick(app)}
+              />
             ))}
           </Stack>
         </Toolbar>
