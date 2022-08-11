@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import type { NextPage } from "next";
 import { AppBar, Toolbar, Stack, Typography } from "@mui/material";
 import ToolChip from "../components/ToolChip";
@@ -42,7 +43,15 @@ const Home: NextPage = () => {
     <>
       <AppBar elevation={0} sx={{ backgroundColor: blueBlack }}>
         <Toolbar variant="dense">
-          <Stack direction="row" alignItems="center" gap={2}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            gap={2}
+            component="a"
+            target="_blank"
+            href="https://mymlops.com"
+            rel="noopener noreferrer"
+          >
             <BsStack color={theme.palette.primary.light} size={25} />
             <Typography color="white" variant="h5">
               MyMLOps
