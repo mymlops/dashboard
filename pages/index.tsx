@@ -14,7 +14,7 @@ import {
 import { BsStack } from "react-icons/bs";
 import theme, { blueBlack } from "../styles/theme";
 
-const DEFAULT_SEARCH = "?folder=/home/ubuntu/workspace/example-1";
+const DEFAULT_SEARCH = "?folder=/home/ubuntu/workspace";
 
 const editor: ITool = { name: "VSCode", port: "8888" };
 
